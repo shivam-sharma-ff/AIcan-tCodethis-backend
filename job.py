@@ -72,7 +72,7 @@ def third_firing_job(fip_id, user_id):
 
 # Execute the functions
 if __name__ == '__main__':
-    for _ in range(150):
+    for _ in range(500):
         fip_id = random.choice(FIP_IDS)
         user_id = random.choice(USER_ID)  # Ensure USER_ID is a list for random.choice
         response, aa_id = send_requests_uniformly(user_id, fip_id)
@@ -87,12 +87,12 @@ if __name__ == '__main__':
     initial_success_count = sum(1 for data in response_map if data['status_code'] == 200)
     total_initial_requests = len(response_map)
 
-    analyze_performance()  # Analyze performance and determine the best AA for each FIP
+    best_aa_requests = analyze_performance()  # Analyze performance and determine the best AA for each FIP
     print(best_aa_requests)
 
     final_success_count = 0
     total_final_requests = 0
-    for _ in range(150):
+    for _ in range(500):
         fip_id = random.choice(FIP_IDS)
         user_id = random.choice(USER_ID)  # Ensure USER_ID is a list for random.choice
         total_final_requests += 1
@@ -105,8 +105,10 @@ if __name__ == '__main__':
     # Calculate the difference
     success_difference = final_success_percentage - initial_success_percentage
 
-    reset_metrics()
-    for _ in range(300):
+    response_map, best_aa_requests = reset_metrics()
+    print("best_aa_requests", best_aa_requests)
+    print("response_map", response_map)
+    for _ in range(1000):
         fip_id = random.choice(FIP_IDS)
         user_id = random.choice(USER_ID)  # Ensure USER_ID is a list for random.choice
         response, best_aa = third_firing_job(fip_id, user_id)  # Call the new third firing job
@@ -116,7 +118,7 @@ if __name__ == '__main__':
             'status_code': response.status_code,
             'timestamp': datetime.now()
         })
-        analyze_performance()
+        best_aa_requests = analyze_performance()
     print(best_aa_requests)
     epsilon_success_count = sum(1 for data in response_map if data['status_code'] == 200)
     total_epsilon_requests = len(response_map)

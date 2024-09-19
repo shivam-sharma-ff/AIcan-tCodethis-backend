@@ -25,12 +25,15 @@ def analyze_performance():
     for fip_id, aa_data in performance_map.items():
         best_aa = max(aa_data.items(), key=lambda item: item[1]['success'] / item[1]['total'] if item[1]['total'] > 0 else 0)
         best_aa_requests[fip_id] = best_aa[0]  # Store the best AA ID
+    
+    return best_aa_requests
 
 def reset_metrics():
     global response_map
     global best_aa_requests
     response_map = []  # Reset the response map
     best_aa_requests = {}  # Reset the best AA requests
+    return response_map, best_aa_requests
 
 # Add this new method to manage response_map size
 def trim_response_map(size):

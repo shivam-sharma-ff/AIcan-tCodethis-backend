@@ -7,14 +7,14 @@ app = Flask(__name__)
 # Configuration for AA availability based on fipID
 AA_AVAILABILITY = {
     'fip1': {
-        'AA1': 1,
+        'AA1': 0.95,
         'AA2': 0.2,
         'AA3': 0.85
     },
     'fip2': {
         'AA1': 0.40,
         'AA2': 0.75,
-        'AA3': 0.90
+        'AA3': 0.94
     }
 }
 

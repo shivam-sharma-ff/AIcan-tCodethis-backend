@@ -10,7 +10,7 @@ FIP_IDS = ['fip1', 'fip2']
 USER_ID = 'user123'  # Example user ID
 
 # Configuration for epsilon-greedy
-EPSILON = 0.1  # Probability of exploration
+
 
 # Function to send initial requests
 def send_requests_uniformly(user_id, fip_id):
@@ -28,12 +28,7 @@ def send_requests_uniformly(user_id, fip_id):
 def select_aa_uniformly():
     return random.choice(AA_IDS)  # Uniformly select an AA from the list
 
-# New method for epsilon-greedy selection of AA
-def select_aa_epsilon_greedy(fip_id):
-    if random.random() < EPSILON:
-        return select_aa_uniformly()  # Explore: select randomly
-    else:
-        return best_aa_requests.get(fip_id, select_aa_uniformly())  # Fallback to uniform if no best AA
+
 
 # Function to send requests to the best AA for a given FIP and user ID
 def send_requests_to_best_aa(user_id, fip_id):
@@ -53,22 +48,7 @@ def send_requests_to_best_aa(user_id, fip_id):
     else:
         return 0
 
-# New function for the third firing job
-def third_firing_job(fip_id, user_id):
-    final_success_count = 0
-    total_final_requests = 0
 
-    fip_id = random.choice(FIP_IDS)
-    user_id = random.choice(USER_ID)  # Ensure USER_ID is a list for random.choice
-    total_final_requests += 1
-    best_aa = select_aa_epsilon_greedy(fip_id)  # Use epsilon-greedy selection
-
-    response = requests.post('http://localhost:5000/api/callAA', json={
-        'AAID': best_aa,
-        'userID': user_id,
-        'fipID': fip_id
-    })
-    return response, best_aa
 
 # Execute the functions
 if __name__ == '__main__':
@@ -105,22 +85,6 @@ if __name__ == '__main__':
     # Calculate the difference
     success_difference = final_success_percentage - initial_success_percentage
 
-    response_map, best_aa_requests = reset_metrics()
-    print("best_aa_requests", best_aa_requests)
-    print("response_map", response_map)
-    for _ in range(1000):
-        fip_id = random.choice(FIP_IDS)
-        user_id = random.choice(USER_ID)  # Ensure USER_ID is a list for random.choice
-        response, best_aa = third_firing_job(fip_id, user_id)  # Call the new third firing job
-        response_map.append({
-            'AAID': aa_id,  # Assuming AAID is in the response
-            'fipID': fip_id,
-            'status_code': response.status_code,
-            'timestamp': datetime.now()
-        })
-        best_aa_requests = analyze_performance()
-    print(best_aa_requests)
-    epsilon_success_count = sum(1 for data in response_map if data['status_code'] == 200)
-    total_epsilon_requests = len(response_map)
-    print("initial success %", (initial_success_percentage + final_success_percentage) / 2)
-    print("third firing success %", (epsilon_success_count / total_epsilon_requests) * 100 if total_initial_requests > 0 else 0)    
+    print((initial_success_percentage+final_success_percentage)/2)
+    print(initial_success_percentage)
+    print(final_success_percentage)

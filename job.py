@@ -1,7 +1,8 @@
 import requests
 import random
 from collections import defaultdict
-from metrics import analyze_performance, response_map, best_aa_requests,reset_metrics # Import the new metrics
+from metrics import analyze_performance, response_map, best_aa_requests,reset_metrics, trim_response_map # Import the new metrics
+from datetime import datetime
 
 # Configuration for AA and FIP IDs
 AA_IDS = ['AA1', 'AA2', 'AA3']
@@ -71,17 +72,19 @@ def third_firing_job(fip_id, user_id):
 
 # Execute the functions
 if __name__ == '__main__':
-    for _ in range(250):
+    for _ in range(150):
         fip_id = random.choice(FIP_IDS)
         user_id = random.choice(USER_ID)  # Ensure USER_ID is a list for random.choice
         response, aa_id = send_requests_uniformly(user_id, fip_id)
-        response_map[len(response_map)] = {
+        response_map.append({
             'AAID': aa_id,  # Assuming AAID is in the response
             'fipID': fip_id,
             'status_code': response.status_code,
-        }
-
-    initial_success_count = sum(1 for data in response_map.values() if data['status_code'] == 200)
+            'timestamp': datetime.now()
+        })
+        # response_map = trim_response_map(10)
+        # print(response_map)
+    initial_success_count = sum(1 for data in response_map if data['status_code'] == 200)
     total_initial_requests = len(response_map)
 
     analyze_performance()  # Analyze performance and determine the best AA for each FIP
@@ -89,7 +92,7 @@ if __name__ == '__main__':
 
     final_success_count = 0
     total_final_requests = 0
-    for _ in range(250):
+    for _ in range(150):
         fip_id = random.choice(FIP_IDS)
         user_id = random.choice(USER_ID)  # Ensure USER_ID is a list for random.choice
         total_final_requests += 1
@@ -103,18 +106,19 @@ if __name__ == '__main__':
     success_difference = final_success_percentage - initial_success_percentage
 
     reset_metrics()
-    for _ in range(500):
+    for _ in range(300):
         fip_id = random.choice(FIP_IDS)
         user_id = random.choice(USER_ID)  # Ensure USER_ID is a list for random.choice
         response, best_aa = third_firing_job(fip_id, user_id)  # Call the new third firing job
-        response_map[len(response_map)] = {
-            'AAID': best_aa,  
+        response_map.append({
+            'AAID': aa_id,  # Assuming AAID is in the response
             'fipID': fip_id,
             'status_code': response.status_code,
-        }
+            'timestamp': datetime.now()
+        })
         analyze_performance()
     print(best_aa_requests)
-    epsilon_success_count = sum(1 for data in response_map.values() if data['status_code'] == 200)
+    epsilon_success_count = sum(1 for data in response_map if data['status_code'] == 200)
     total_epsilon_requests = len(response_map)
     print("initial success %", (initial_success_percentage + final_success_percentage) / 2)
     print("third firing success %", (epsilon_success_count / total_epsilon_requests) * 100 if total_initial_requests > 0 else 0)    

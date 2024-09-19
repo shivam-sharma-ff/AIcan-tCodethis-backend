@@ -1,7 +1,7 @@
 from collections import defaultdict
 
-# Dictionary to store responses
-response_map = {}
+# List to store responses
+response_map = []
 best_aa_requests = {}
 
 def analyze_performance():
@@ -12,7 +12,7 @@ def analyze_performance():
     performance_map = defaultdict(lambda: defaultdict(lambda: {'success': 0, 'total': 0}))
 
     # Analyze the response_map
-    for request_id, data in response_map.items():
+    for data in response_map:
         aa_id = data['AAID']
         fip_id = data['fipID']
         status_code = data['status_code']
@@ -29,5 +29,18 @@ def analyze_performance():
 def reset_metrics():
     global response_map
     global best_aa_requests
-    response_map = {}  # Reset the response map
+    response_map = []  # Reset the response map
     best_aa_requests = {}  # Reset the best AA requests
+
+# Add this new method to manage response_map size
+def trim_response_map(size):
+    global response_map
+    # Keep only the latest 'size' entries in response_map
+    if len(response_map) > size:
+        # Sort by timestamp and keep the latest 'size' entries
+        sorted_requests = sorted(response_map, key=lambda item: item['timestamp'], reverse=True)
+        response_map = sorted_requests[:size]  # Keep only the latest 'size' entries
+    return response_map
+# Call this method with the desired size when needed
+
+

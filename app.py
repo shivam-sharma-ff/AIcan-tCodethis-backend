@@ -1,0 +1,50 @@
+from flask import Flask, jsonify
+import random
+from flask import request
+
+app = Flask(__name__)
+
+# Configuration for AA availability based on fipID
+AA_AVAILABILITY = {
+    'fip1': {
+        'AA1': 1,
+        'AA2': 0.2,
+        'AA3': 0.85
+    },
+    'fip2': {
+        'AA1': 0.40,
+        'AA2': 0.75,
+        'AA3': 0.90
+    }
+}
+
+@app.route('/')
+def hello_world():
+    return jsonify({"message": "Hello, World!"})
+
+@app.route('/api/callAA', methods=['POST'])
+def call_aa():
+    aa_id = request.json.get('AAID')
+    user_id = request.json.get('userID')
+    fip_id = request.json.get('fipID')
+
+    if not aa_id or not user_id or not fip_id:
+        return jsonify({"error": "Missing AAID, userID, or fipID"}), 400
+
+    if fip_id not in AA_AVAILABILITY or aa_id not in AA_AVAILABILITY[fip_id]:
+        return jsonify({"error": "Invalid AAID or fipID"}), 400
+
+    # Check AA availability based on configuration
+    if random.random() < AA_AVAILABILITY[fip_id][aa_id]:
+        return jsonify({
+            "message": f"AA {aa_id} is available for user {user_id} under fip {fip_id}",
+            "status": "success"
+        }), 200
+    else:
+        return jsonify({
+            "message": f"AA {aa_id} is not available for user {user_id} under fip {fip_id}",
+            "status": "failure"
+        }), 500
+
+if __name__ == '__main__':
+    app.run(debug=True)

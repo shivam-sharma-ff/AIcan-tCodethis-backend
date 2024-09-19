@@ -28,8 +28,8 @@ def third_firing_job(fip_id, user_id):
 if __name__ == '__main__':
     total_responses = 0
     successful_responses = 0
-    FIRE_COUNT = 500
-    PAST_SIZE = 50
+    FIRE_COUNT = 5000
+    PAST_SIZE = 500
     for _ in range(FIRE_COUNT):
         fip_id = random.choice(FIP_IDS)
         user_id = random.choice(USER_ID)  # Ensure USER_ID is a list for random.choice
@@ -45,7 +45,7 @@ if __name__ == '__main__':
             successful_responses += 1
         best_aa_requests = analyze_performance()
         response_map = trim_response_map(PAST_SIZE)
-        print(best_aa_requests)
-        print(response_map)
+        # print(best_aa_requests)
+        # print(response_map)
     final_success_percentage = (successful_responses / total_responses) * 100 if total_responses > 0 else 0
     print(f"Final Success Percentage: {final_success_percentage:.2f}%")

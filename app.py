@@ -48,6 +48,7 @@ def call_aa():
     
 @app.route('/update_metadata', methods=['POST'])
 def update_metadata():
+    global AA_AVAILABILITY
     data = request.json
     
     if not isinstance(data, dict):
@@ -55,15 +56,16 @@ def update_metadata():
     
     # Update AA_AVAILABILITY with the received data
     new_aa_availability = {}
-    for aa_id, fip_data in data.items():
-        for fip_id, value in fip_data.items():
-            if fip_id not in new_aa_availability:
-                new_aa_availability[fip_id] = {}
-            new_aa_availability[fip_id][aa_id] = value / 100  # Convert to probability
+    for fip_data, aa_id in data.items():
+        for aa_id, value in aa_id.items():
+            if fip_data not in new_aa_availability:
+                new_aa_availability[fip_data] = {}
+            new_aa_availability[fip_data][aa_id] = value / 100  # Convert to probability
     
-    AA_AVAILABILITY.update(new_aa_availability)
+    AA_AVAILABILITY = new_aa_availability
     
     return jsonify({"message": "Metadata updated successfully" + str(AA_AVAILABILITY)})
+
 
 if __name__ == '__main__':
     app.run(debug=True)

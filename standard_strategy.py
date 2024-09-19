@@ -34,7 +34,7 @@ def send_requests_to_best_aa(user_id, fip_id):
         return 0
 
 if __name__ == '__main__':
-    for _ in range(500):
+    for _ in range(1000):
         fip_id = random.choice(FIP_IDS)
         user_id = random.choice(USER_ID)  # Ensure USER_ID is a list for random.choice
         response, aa_id = send_requests_uniformly(user_id, fip_id)
@@ -53,7 +53,7 @@ if __name__ == '__main__':
 
     final_success_count = 0
     total_final_requests = 0
-    for _ in range(2000):
+    for _ in range(1000):
         fip_id = random.choice(FIP_IDS)
         user_id = random.choice(USER_ID)  # Ensure USER_ID is a list for random.choice
         total_final_requests += 1

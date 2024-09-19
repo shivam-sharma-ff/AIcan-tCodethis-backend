@@ -45,6 +45,25 @@ def call_aa():
             "message": f"AA {aa_id} is not available for user {user_id} under fip {fip_id}",
             "status": "failure"
         }), 500
+    
+@app.route('/update_metadata', methods=['POST'])
+def update_metadata():
+    data = request.json
+    
+    if not isinstance(data, dict):
+        return jsonify({"error": "Invalid data format"}), 400
+    
+    # Update AA_AVAILABILITY with the received data
+    new_aa_availability = {}
+    for aa_id, fip_data in data.items():
+        for fip_id, value in fip_data.items():
+            if fip_id not in new_aa_availability:
+                new_aa_availability[fip_id] = {}
+            new_aa_availability[fip_id][aa_id] = value / 100  # Convert to probability
+    
+    AA_AVAILABILITY.update(new_aa_availability)
+    
+    return jsonify({"message": "Metadata updated successfully" + str(AA_AVAILABILITY)})
 
 if __name__ == '__main__':
     app.run(debug=True)

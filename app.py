@@ -1,7 +1,7 @@
 from flask import Flask, jsonify
 import random
 from flask import request
-
+from job import AA_IDS, FIP_IDS, USER_ID
 app = Flask(__name__)
 
 # Configuration for AA availability based on fipID
@@ -82,7 +82,12 @@ def call_aa_finsense():
         return jsonify({"error": "Invalid AAID or fipID"}), 400
     
     global _balls
-    balls = {aa_id: {fip_id:1}}
+    balls = {aa_id: {fip_id: 1}}
+    for aa in AA_IDS:
+        for fip in FIP_IDS:
+            if fip not in balls.get(aa, {}):
+                balls.setdefault(aa, {}).setdefault(fip, 0)
+
     _balls = balls
     # Check AA availability based on configuration
     if random.random() < AA_AVAILABILITY[fip_id][aa_id]:

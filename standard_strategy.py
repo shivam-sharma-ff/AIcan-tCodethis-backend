@@ -3,7 +3,6 @@ import random
 from datetime import datetime
 from metrics import response_map, trim_response_map, analyze_performance, best_aa_requests  # Import necessary metrics
 from job import AA_IDS, FIP_IDS, USER_ID, select_aa_uniformly
-
 def send_requests_uniformly(user_id, fip_id):
     aa_id = select_aa_uniformly()  # New method to select AA uniformly
     
@@ -29,12 +28,16 @@ def send_requests_to_best_aa(user_id, fip_id):
         if response.status_code == 200:
             success_count += 1
 
-        return success_count
+        return success_count,best_aa
     else:
         return 0
 
+def set_balls(balls):
+    response = requests.post('http://localhost:5000/set_balls', json=balls)
+    return response  # Return the response from the API
+
 if __name__ == '__main__':
-    for _ in range(1000):
+    for _ in range(100):
         fip_id = random.choice(FIP_IDS)
         user_id = random.choice(USER_ID)  # Ensure USER_ID is a list for random.choice
         response, aa_id = send_requests_uniformly(user_id, fip_id)
@@ -53,12 +56,14 @@ if __name__ == '__main__':
 
     final_success_count = 0
     total_final_requests = 0
-    for _ in range(1000):
+    for _ in range(10000):
         fip_id = random.choice(FIP_IDS)
         user_id = random.choice(USER_ID)  # Ensure USER_ID is a list for random.choice
         total_final_requests += 1
-        final_success_count += send_requests_to_best_aa(user_id, fip_id)  # Send requests to the best AA for each FIP
-
+        curr_success_count, best_aa = send_requests_to_best_aa(user_id, fip_id)  # Send requests to the best AA for each FIP
+        balls = {best_aa: {fip_id:1}}
+        set_balls(balls)
+        final_success_count += curr_success_count
     print(final_success_count/total_final_requests*100)
 
     print((initial_success_count/total_initial_requests*100+final_success_count/total_final_requests*100)/2)

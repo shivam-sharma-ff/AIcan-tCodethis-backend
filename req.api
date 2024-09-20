@@ -12,3 +12,9 @@ curl -X POST http://localhost:5000/update_metadata -H "Content-Type: application
         "fip2": 2
     }
 }'
+
+
+curl -X POST -H "Content-Type: application/json" -d '{"AA1": {"FIP1": 95, "FIP2": 95}, "AA2": {"FIP1": 1, "FIP2": 1}, "AA3": {"FIP1": 2, "FIP2": 2}}' http://localhost:5000/set_balls
+
+curl -X GET http://localhost:5000/get_balls
+

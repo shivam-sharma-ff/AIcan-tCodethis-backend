@@ -17,6 +17,31 @@ AA_AVAILABILITY = {
         'AA3': 0.94
     }
 }
+_balls = {}
+
+def get_balls():
+    return _balls
+    
+@app.route('/set_balls', methods=['POST'])
+def set_balls():
+    global _balls
+    payload = request.json
+    if payload is not None:
+        _balls = payload
+        return jsonify(_balls), 200
+    else:
+        return jsonify({"error": "Missing payload in request body"}), 400
+
+# Example curl request:
+# curl -X POST -H "Content-Type: application/json" -d '{"AA1": {"FIP1": 95, "FIP2": 95}, "AA2": {"FIP1": 1, "FIP2": 1}, "AA3": {"FIP1": 2, "FIP2": 2}}' http://localhost:5000/set_balls
+
+@app.route('/get_balls', methods=['GET'])
+def get_balls():
+    global _balls
+    current_balls = _balls.copy()  # Copy current balls to return
+    _balls.clear()  # Clear the balls
+    return jsonify(current_balls)  # Return the current balls as JSON
+
 
 @app.route('/')
 def hello_world():

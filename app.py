@@ -32,8 +32,6 @@ def set_balls():
     else:
         return jsonify({"error": "Missing payload in request body"}), 400
 
-# Example curl request:
-# curl -X POST -H "Content-Type: application/json" -d '{"AA1": {"FIP1": 95, "FIP2": 95}, "AA2": {"FIP1": 1, "FIP2": 1}, "AA3": {"FIP1": 2, "FIP2": 2}}' http://localhost:5000/set_balls
 
 @app.route('/get_balls', methods=['GET'])
 def get_balls():
@@ -59,6 +57,33 @@ def call_aa():
     if fip_id not in AA_AVAILABILITY or aa_id not in AA_AVAILABILITY[fip_id]:
         return jsonify({"error": "Invalid AAID or fipID"}), 400
 
+    # Check AA availability based on configuration
+    if random.random() < AA_AVAILABILITY[fip_id][aa_id]:
+        return jsonify({
+            "message": f"AA {aa_id} is available for user {user_id} under fip {fip_id}",
+            "status": "success"
+        }), 200
+    else:
+        return jsonify({
+            "message": f"AA {aa_id} is not available for user {user_id} under fip {fip_id}",
+            "status": "failure"
+        }), 500
+
+@app.route('/api/callAA/finsense', methods=['POST'])
+def call_aa_finsense():
+    aa_id = request.json.get('AAID')
+    user_id = request.json.get('userID')
+    fip_id = request.json.get('fipID')
+
+    if not aa_id or not user_id or not fip_id:
+        return jsonify({"error": "Missing AAID, userID, or fipID"}), 400
+
+    if fip_id not in AA_AVAILABILITY or aa_id not in AA_AVAILABILITY[fip_id]:
+        return jsonify({"error": "Invalid AAID or fipID"}), 400
+    
+    global _balls
+    balls = {aa_id: {fip_id:1}}
+    _balls = balls
     # Check AA availability based on configuration
     if random.random() < AA_AVAILABILITY[fip_id][aa_id]:
         return jsonify({

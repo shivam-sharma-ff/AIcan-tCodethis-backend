@@ -18,3 +18,11 @@ curl -X POST -H "Content-Type: application/json" -d '{"AA1": {"FIP1": 95, "FIP2"
 
 curl -X GET http://localhost:5000/get_balls
 
+
+curl -X POST http://localhost:5000/api/callAA/finsense \
+-H "Content-Type: application/json" \
+-d '{
+    "AAID": "AA1",
+    "userID": "user123",
+    "fipID": "fip1"
+}'

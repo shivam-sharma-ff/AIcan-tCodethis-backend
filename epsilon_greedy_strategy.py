@@ -3,7 +3,11 @@ import random
 from datetime import datetime
 from metrics import response_map, trim_response_map, analyze_performance, best_aa_requests  # Import necessary metrics
 from job import AA_IDS, FIP_IDS, USER_ID, select_aa_uniformly
+import time
 
+    # Function to introduce delay
+def introduce_delay():
+    time.sleep(0.01) 
 EPSILON = 0.1  # Probability of exploration
 
 collate_balls = {}
@@ -34,9 +38,11 @@ def third_firing_job(fip_id, user_id):
 if __name__ == '__main__':
     total_responses = 0
     successful_responses = 0
-    FIRE_COUNT = 5000
+    FIRE_COUNT = 7500
     PAST_SIZE = 500
+    # 100 milliseconds delay
     for i in range(FIRE_COUNT):
+        introduce_delay()
         fip_id = random.choice(FIP_IDS)
         user_id = random.choice(USER_ID)  # Ensure USER_ID is a list for random.choice
         response, best_aa = third_firing_job(fip_id, user_id)  # Call the new third firing job

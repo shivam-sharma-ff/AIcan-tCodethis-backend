@@ -62,6 +62,10 @@ if __name__ == '__main__':
         total_final_requests += 1
         curr_success_count, best_aa = send_requests_to_best_aa(user_id, fip_id)  # Send requests to the best AA for each FIP
         balls = {best_aa: {fip_id:1}}
+        for aa in AA_IDS:
+            for fip in FIP_IDS:
+                if fip not in balls.get(aa, {}):
+                    balls.setdefault(aa, {}).setdefault(fip, 0)
         set_balls(balls)
         final_success_count += curr_success_count
     print(final_success_count/total_final_requests*100)

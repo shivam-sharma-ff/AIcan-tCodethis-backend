@@ -125,5 +125,29 @@ def update_metadata():
     return jsonify({"message": "Metadata updated successfully" + str(AA_AVAILABILITY)})
 
 
+# Static variable for metrics data
+METRICS_DATA = {
+    "standard_strategy": [],
+    "epsilon_greedy_strategy": []
+}
+
+@app.route('/update_metrics', methods=['POST'])
+def update_metrics():
+    global METRICS_DATA
+    data = request.json
+    
+    if not isinstance(data, dict):
+        return jsonify({"error": "Invalid data format"}), 400
+    
+    # Update METRICS_DATA with the received data
+    for key, value in data.items():
+        METRICS_DATA[key] = value
+    
+    return jsonify({"message": "Metrics updated successfully", "data": METRICS_DATA})
+
+@app.route('/get_metrics', methods=['GET'])
+def get_metrics():
+    return jsonify(METRICS_DATA)  # Return the metrics data as JSON
+
 if __name__ == '__main__':
     app.run(debug=True)

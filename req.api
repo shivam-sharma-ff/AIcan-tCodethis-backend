@@ -26,3 +26,21 @@ curl -X POST http://localhost:5000/api/callAA/finsense \
     "userID": "user123",
     "fipID": "fip1"
 }'
+
+
+curl -X GET http://localhost:5000/get_metrics
+
+curl -X POST http://localhost:5000/update_metrics \
+-H "Content-Type: application/json" \
+-d '{
+    "category1": [
+        {"requests": 10, "drop": 0.1},
+        {"requests": 20, "drop": 0.2},
+        {"requests": 30, "drop": 0.3}
+    ],
+    "category2": [
+        {"requests": 10, "drop": 0.2},
+        {"requests": 20, "drop": 0.3},
+        {"requests": 30, "drop": 0.4}
+    ]
+}'

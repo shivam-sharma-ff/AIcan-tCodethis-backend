@@ -81,6 +81,8 @@ if __name__ == '__main__':
 
     final_success_count = 0
     total_final_requests = 0
+
+    drop_payload = []
     
     for i in range(2500):
         introduce_delay()
@@ -101,10 +103,24 @@ if __name__ == '__main__':
                 for fip, count in fip_data.items():
                     collate_balls.setdefault(aa, {}).setdefault(fip, 0)
                     collate_balls[aa][fip] += count
+
+        final_success_count += curr_success_count
+
         if (i+1) % 100 == 0:
             set_balls(collate_balls)  # Set balls only when count is 100
             collate_balls = {}  # Reset collate_balls
-        final_success_count += curr_success_count
-    print(final_success_count/total_final_requests*100)
+ 
+            drop_payload.append({
+                "requests": total_final_requests,
+                "drop": total_final_requests - final_success_count
+            })
+            drop_payload_send = {
+                "standard_strategy": drop_payload,
+            }
+            requests.post('http://localhost:5000/update_metrics', json=drop_payload_send)
 
+
+    print(final_success_count/total_final_requests*100)
     print((initial_success_count/total_initial_requests*100+final_success_count/total_final_requests*100)/2)
+
+    

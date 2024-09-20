@@ -38,9 +38,10 @@ def third_firing_job(fip_id, user_id):
 if __name__ == '__main__':
     total_responses = 0
     successful_responses = 0
-    FIRE_COUNT = 7500
-    PAST_SIZE = 500
+    FIRE_COUNT = 2000
+    PAST_SIZE = 200
     # 100 milliseconds delay
+    drop_payload = []
     for i in range(FIRE_COUNT):
         introduce_delay()
         fip_id = random.choice(FIP_IDS)
@@ -65,12 +66,23 @@ if __name__ == '__main__':
                 for fip, count in fip_data.items():
                     collate_balls.setdefault(aa, {}).setdefault(fip, 0)
                     collate_balls[aa][fip] += count
-        if (i+1) % 100 == 0:
-            set_balls(collate_balls)  # Set balls only when count is 100
-            collate_balls = {}  # Reset collate_balls
+
         total_responses += 1
         if response.status_code == 200:
             successful_responses += 1
+
+        if (i+1) % 100 == 0:
+            set_balls(collate_balls)  # Set balls only when count is 100
+            collate_balls = {}  # Reset collate_balls
+            drop_payload.append({
+                "requests": total_responses,
+                "drop": total_responses - successful_responses
+            })
+            drop_payload_send = {
+                "epsilon_greedy_strategy": drop_payload,
+            }
+            requests.post('http://localhost:5000/update_metrics', json=drop_payload_send)
+
         best_aa_requests = analyze_performance()
         response_map = trim_response_map(PAST_SIZE)
         # print(best_aa_requests)

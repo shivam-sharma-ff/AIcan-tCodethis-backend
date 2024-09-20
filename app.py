@@ -10,7 +10,7 @@ CORS(app)
 AA_AVAILABILITY = {
     'fip1': {
         'AA1': 0.95,
-        'AA2': 0.2,
+        'AA2': 0.99,
         'AA3': 0.85
     },
     'fip2': {
@@ -85,7 +85,7 @@ def call_aa_finsense():
         return jsonify({"error": "Invalid AAID or fipID"}), 400
     
     global _balls
-    balls = {aa_id: {fip_id: 1}}
+    balls = {aa_id: {fip_id: 2}}
     for aa in AA_IDS:
         for fip in FIP_IDS:
             if fip not in balls.get(aa, {}):

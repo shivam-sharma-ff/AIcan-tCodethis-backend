@@ -56,17 +56,28 @@ if __name__ == '__main__':
 
     final_success_count = 0
     total_final_requests = 0
-    for _ in range(10000):
+    collate_balls = {}
+    for i in range(5000):
         fip_id = random.choice(FIP_IDS)
         user_id = random.choice(USER_ID)  # Ensure USER_ID is a list for random.choice
         total_final_requests += 1
         curr_success_count, best_aa = send_requests_to_best_aa(user_id, fip_id)  # Send requests to the best AA for each FIP
-        balls = {best_aa: {fip_id:1}}
+        balls = {best_aa: {fip_id:2}}
         for aa in AA_IDS:
             for fip in FIP_IDS:
                 if fip not in balls.get(aa, {}):
                     balls.setdefault(aa, {}).setdefault(fip, 0)
-        set_balls(balls)
+                    
+        if not collate_balls:
+            collate_balls = balls
+        else:
+            for aa, fip_data in balls.items():
+                for fip, count in fip_data.items():
+                    collate_balls.setdefault(aa, {}).setdefault(fip, 0)
+                    collate_balls[aa][fip] += count
+        if (i+1) % 100 == 0:
+            set_balls(collate_balls)  # Set balls only when count is 100
+            collate_balls = {}  # Reset collate_balls
         final_success_count += curr_success_count
     print(final_success_count/total_final_requests*100)
 

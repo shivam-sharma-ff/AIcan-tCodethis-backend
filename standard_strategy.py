@@ -37,7 +37,8 @@ def set_balls(balls):
     return response  # Return the response from the API
 
 if __name__ == '__main__':
-    for _ in range(100):
+    collate_balls = {}
+    for i in range(2500):
         fip_id = random.choice(FIP_IDS)
         user_id = random.choice(USER_ID)  # Ensure USER_ID is a list for random.choice
         response, aa_id = send_requests_uniformly(user_id, fip_id)
@@ -47,6 +48,22 @@ if __name__ == '__main__':
             'status_code': response.status_code,
             'timestamp': datetime.now()
         })
+        balls = {aa_id: {fip_id:1}}
+        for aa in AA_IDS:
+            for fip in FIP_IDS:
+                if fip not in balls.get(aa, {}):
+                    balls.setdefault(aa, {}).setdefault(fip, 0)
+                    
+        if not collate_balls:
+            collate_balls = balls
+        else:
+            for aa, fip_data in balls.items():
+                for fip, count in fip_data.items():
+                    collate_balls.setdefault(aa, {}).setdefault(fip, 0)
+                    collate_balls[aa][fip] += count
+        if (i+1) % 100 == 0:
+            set_balls(collate_balls)  # Set balls only when count is 100
+            collate_balls = {}  # Reset collate_balls
     initial_success_count = sum(1 for data in response_map if data['status_code'] == 200)
     total_initial_requests = len(response_map)
 
@@ -56,13 +73,13 @@ if __name__ == '__main__':
 
     final_success_count = 0
     total_final_requests = 0
-    collate_balls = {}
-    for i in range(5000):
+    
+    for i in range(2500):
         fip_id = random.choice(FIP_IDS)
         user_id = random.choice(USER_ID)  # Ensure USER_ID is a list for random.choice
         total_final_requests += 1
         curr_success_count, best_aa = send_requests_to_best_aa(user_id, fip_id)  # Send requests to the best AA for each FIP
-        balls = {best_aa: {fip_id:2}}
+        balls = {best_aa: {fip_id:1}}
         for aa in AA_IDS:
             for fip in FIP_IDS:
                 if fip not in balls.get(aa, {}):

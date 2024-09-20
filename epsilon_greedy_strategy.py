@@ -6,6 +6,12 @@ from job import AA_IDS, FIP_IDS, USER_ID, select_aa_uniformly
 
 EPSILON = 0.1  # Probability of exploration
 
+collate_balls = {}
+
+def set_balls(balls):
+    response = requests.post('http://localhost:5000/set_balls', json=balls)
+    return response  # Return the response from the API
+
 # New method for epsilon-greedy selection of AA
 def select_aa_epsilon_greedy(fip_id):
     if random.random() < EPSILON:
@@ -30,7 +36,7 @@ if __name__ == '__main__':
     successful_responses = 0
     FIRE_COUNT = 5000
     PAST_SIZE = 500
-    for _ in range(FIRE_COUNT):
+    for i in range(FIRE_COUNT):
         fip_id = random.choice(FIP_IDS)
         user_id = random.choice(USER_ID)  # Ensure USER_ID is a list for random.choice
         response, best_aa = third_firing_job(fip_id, user_id)  # Call the new third firing job
@@ -40,6 +46,22 @@ if __name__ == '__main__':
             'status_code': response.status_code,
             'timestamp': datetime.now()
         })
+        balls = {best_aa: {fip_id:1}}
+        for aa in AA_IDS:
+            for fip in FIP_IDS:
+                if fip not in balls.get(aa, {}):
+                    balls.setdefault(aa, {}).setdefault(fip, 0)
+                    
+        if not collate_balls:
+            collate_balls = balls
+        else:
+            for aa, fip_data in balls.items():
+                for fip, count in fip_data.items():
+                    collate_balls.setdefault(aa, {}).setdefault(fip, 0)
+                    collate_balls[aa][fip] += count
+        if (i+1) % 100 == 0:
+            set_balls(collate_balls)  # Set balls only when count is 100
+            collate_balls = {}  # Reset collate_balls
         total_responses += 1
         if response.status_code == 200:
             successful_responses += 1

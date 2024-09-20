@@ -9,7 +9,7 @@ CORS(app)
 # Configuration for AA availability based on fipID
 AA_AVAILABILITY = {
     'fip1': {
-        'AA1': 0.95,
+        'AA1': 0.80,
         'AA2': 0.99,
         'AA3': 0.85
     },

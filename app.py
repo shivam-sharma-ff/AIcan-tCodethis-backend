@@ -2,8 +2,10 @@ from flask import Flask, jsonify
 import random
 from flask import request
 from job import AA_IDS, FIP_IDS, USER_ID
-app = Flask(__name__)
+from flask_cors import CORS
 
+app = Flask(__name__)
+CORS(app)
 # Configuration for AA availability based on fipID
 AA_AVAILABILITY = {
     'fip1': {
@@ -71,9 +73,10 @@ def call_aa():
 
 @app.route('/api/callAA/finsense', methods=['POST'])
 def call_aa_finsense():
-    aa_id = request.json.get('AAID')
-    user_id = request.json.get('userID')
-    fip_id = request.json.get('fipID')
+    payload = request.json
+    aa_id = payload['body']['aaId']
+    user_id = payload['body']['userId']
+    fip_id = payload['body']['fipId']
 
     if not aa_id or not user_id or not fip_id:
         return jsonify({"error": "Missing AAID, userID, or fipID"}), 400

@@ -3,6 +3,13 @@ import random
 from datetime import datetime
 from metrics import response_map, trim_response_map, analyze_performance, best_aa_requests  # Import necessary metrics
 from job import AA_IDS, FIP_IDS, USER_ID, select_aa_uniformly
+
+import time
+
+    # Function to introduce delay
+def introduce_delay():
+    time.sleep(0.01) 
+
 def send_requests_uniformly(user_id, fip_id):
     aa_id = select_aa_uniformly()  # New method to select AA uniformly
     
@@ -38,7 +45,8 @@ def set_balls(balls):
 
 if __name__ == '__main__':
     collate_balls = {}
-    for i in range(2500):
+    for i in range(500):
+        introduce_delay()
         fip_id = random.choice(FIP_IDS)
         user_id = random.choice(USER_ID)  # Ensure USER_ID is a list for random.choice
         response, aa_id = send_requests_uniformly(user_id, fip_id)
@@ -75,6 +83,7 @@ if __name__ == '__main__':
     total_final_requests = 0
     
     for i in range(2500):
+        introduce_delay()
         fip_id = random.choice(FIP_IDS)
         user_id = random.choice(USER_ID)  # Ensure USER_ID is a list for random.choice
         total_final_requests += 1

@@ -1,0 +1,14 @@
+curl -X POST http://localhost:5000/update_metadata -H "Content-Type: application/json" -d '{
+    "AA1": {
+        "fip1": 95,
+        "fip2": 95
+    },
+    "AA2": {
+        "fip1": 1,
+        "fip2": 1
+    },
+    "AA3": {
+        "fip1": 2,
+        "fip2": 2
+    }
+}'
